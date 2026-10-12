@@ -1,0 +1,726 @@
+# DO NOT EDIT —— 本文件由 blockmatrix-web/scripts/generateNavigationManifest.ts 生成。
+# 机械字段（id/title/route/menu_path/menu_key/hidden/api_endpoints/entity_params）
+# 来自 admin-frontend 的运行时路由表；description/keywords/capabilities/lookup_hint/
+# reviewed 来自同目录的 pages.overlay.yaml。重新生成命令见 README.md。
+known_gaps:
+  - topic: KYC / 实名认证
+    note: admin-frontend 中不存在任何 KYC、实名认证相关的页面、路由或接口（已全量检索确认）。
+    keywords: [kyc, 实名, 实名认证, 身份认证, 身份验证, 证件审核, identity verification]
+  - topic: 工单 / 客服会话
+    note: 后台没有工单系统或客服会话入口；与客户的触达手段只有内容管理下的消息管理、邮件管理与站内信管理。
+    keywords: [工单, 客服, 客诉, 投诉, 客服会话, ticket]
+  - topic: 公告管理
+    note: 没有独立的「公告」页面。最接近的是内容管理下的文章管理、站内信管理与消息管理。
+    keywords: [公告, 通告, 全站通知, announcement]
+  - topic: 风控规则配置
+    note: 后台没有风控规则/风控策略的配置页面。风控只有逐笔人工审核入口（出金审核-风控），以及黑名单页上的权限限制开关。
+    keywords: [风控规则, 风控策略, 风控配置, 风控模型, risk rule]
+  - topic: 单条记录的直达链接
+    note: 全站只有 4 条带动态段的路由（代理申请详情、代理结构、佣金配置详情、修改角色），其余页面都没有指向单条记录的 URL。客户详情是 React state 里的抽屉，不写 URL；列表页也不支持 ?user_code= 之类的预填参数。因此除这 4 条外只能给页面级链接，靠 lookup_hint 说明进页面后怎么找。
+    keywords: [深链, 直达链接, 记录链接, 详情页链接, deep link]
+  - topic: 按当前运营用户的权限过滤
+    note: manifest 只携带 menu_key 作为信息，不做权限过滤 —— MCP 下游是一套共享的静态 cookie，拿不到当前运营用户真实的 menu_keys[]。回答里应说明「能否打开取决于你的后台权限」。
+    keywords: [权限过滤, 权限校验, 按权限过滤, 有没有权限]
+pages:
+  - id: customer.manage.list
+    title: 客户列表
+    route: /customers/list
+    menu_path: [客户管理, 客户管理, 客户列表]
+    menu_key: customer.manage.list
+    hidden: false
+    api_endpoints: [user/list, user/list/export, user/transfer]
+    description: 平台终端客户（交易用户）档案的查询与筛选入口；点击某行可打开客户详情抽屉，查看其资金、交易、代理与跟随信息。
+    keywords: [客户, 客户列表, 终端客户, 交易用户, 注册用户, 客户档案, user_code, customer, 用户列表, 终端用户, Customer List, 顧客一覧]
+    capabilities: [按编号/用户名/邮箱关键词搜索客户, 按付款状态筛选, 按注册时间筛选并排序, 导出客户列表, 打开客户详情抽屉, 转移客户归属]
+    lookup_hint: 打开客户列表后在顶部「关键词」输入框填编号、用户名或邮箱搜索。客户详情是弹出抽屉、不写 URL，所以没法直接深链到某一个客户。注意本页是终端交易客户；后台管理员账号在「用户设置管理」页。
+    entity_params: []
+    reviewed: true
+  - id: customer.manage.loginLogs
+    title: 用户登录日志
+    route: /customers/login-logs
+    menu_path: [客户管理, 客户管理, 用户登录日志]
+    menu_key: customer.manage.loginLogs
+    hidden: false
+    api_endpoints: [user/login_logs, user/login_logs/options, user/login_logs/export, area/countries]
+    description: 查询终端客户的登录记录，含登录时间、登录方式、国家/地区与设备信息。
+    keywords: [登录日志, 登录记录, 登陆记录, 登录历史, 设备, IP, login logs, 用户登录日志, User Login Logs, ユーザーログインログ]
+    capabilities: [按关键词类型+关键词搜索登录记录, 按登录时间范围筛选, 按登录方式与国家/地区筛选, 导出登录日志]
+    lookup_hint: 打开本页后先在顶部选「关键词类型」（如 user_code、邮箱），再填关键词，并用登录时间范围收窄。
+    entity_params: []
+    reviewed: true
+  - id: customer.dashboard.bi
+    title: 数据概览
+    route: /customers/dashboard/bi
+    menu_path: [客户管理, 数据看板, 数据概览]
+    menu_key: customer.dashboard.bi
+    hidden: false
+    api_endpoints: [data_overview, data_overview/chart_date]
+    description: 客户侧经营数据看板，展示注册、入金、交易等核心指标汇总与趋势图。
+    keywords: [数据看板, 数据概览, 大盘, 报表, 指标, 趋势, BI, dashboard, BI Dashboard, データ概要]
+    capabilities: [查看客户核心指标汇总, 查看指标趋势图, 切换趋势图的统计粒度]
+    lookup_hint: 本页只有汇总指标，查不了单个客户；要查某个人请去「客户列表」。
+    entity_params: []
+    reviewed: true
+  - id: customer.special.blacklist
+    title: 黑名单
+    route: /customers/blacklist
+    menu_path: [客户管理, 特殊客户, 黑名单]
+    menu_key: customer.special.blacklist
+    hidden: false
+    api_endpoints: [black, black/export, black/privileges, black/privilege, "black/{userCode}"]
+    description: 维护黑名单客户，并按需限制其入金、出金、交易等权限。
+    keywords: [黑名单, 拉黑, 封禁, 限制, 风控名单, blacklist, Blacklist, ブラックリスト]
+    capabilities: [按 user_code/邮箱/加入时间/注册时间筛选黑名单, 新增黑名单客户, 编辑黑名单的限制权限, 移出黑名单, 导出黑名单]
+    lookup_hint: 要确认某个客户是不是黑名单，直接在本页按他的 user_code 或邮箱搜。
+    entity_params: []
+    reviewed: true
+  - id: customer.special.whitelist
+    title: 白名单
+    route: /customers/whitelist
+    menu_path: [客户管理, 特殊客户, 白名单]
+    menu_key: customer.special.whitelist
+    hidden: false
+    api_endpoints: [white_list, white_list/export]
+    description: 维护白名单客户名单。
+    keywords: [白名单, 免审, 特殊客户, whitelist, Whitelist, ホワイトリスト]
+    capabilities: [按 user_code 筛选白名单, 导出白名单]
+    lookup_hint: 打开本页后按 user_code 搜索。
+    entity_params: []
+    reviewed: true
+  - id: order.trade.positions
+    title: 订单列表
+    route: /orders/list
+    menu_path: [订单管理, 订单列表]
+    menu_key: order.trade.positions
+    hidden: false
+    api_endpoints: [trades, trades/types, trades/export]
+    description: 已成交订单的查询入口（含持仓与历史平仓），可看开平仓时间、手数、盈亏与所属交易账号。
+    keywords: [订单, 订单列表, 成交订单, 交易记录, 持仓, 平仓, 单号, ticket, order, trade, Order List, 注文一覧]
+    capabilities: [按 user_code/交易账号(login)/订单号(ticket)搜索, 按开仓时间与平仓时间筛选, 按账户类型与是否平仓筛选, 导出订单, 打开订单详情抽屉]
+    lookup_hint: 打开订单列表后在顶部按 ticket（订单号）、login（交易账号）或 user_code 搜索；没有指向单条订单的 URL。
+    entity_params: []
+    reviewed: true
+  - id: order.trade.pending
+    title: 挂单列表
+    route: /orders/pending
+    menu_path: [订单管理, 挂单列表]
+    menu_key: order.trade.pending
+    hidden: false
+    api_endpoints: [pending_trades, pending_trades/export]
+    description: 尚未成交的挂单查询入口，可看挂单价格、类型与挂单时间。
+    keywords: [挂单, 挂单列表, 未成交, 委托, 限价单, pending order, Pending Orders, 保留注文]
+    capabilities: [按 user_code/交易账号(login)/订单号(ticket)搜索挂单, 按挂单时间筛选, 导出挂单列表]
+    lookup_hint: 本页只有未成交挂单；已成交的在「订单列表」页。
+    entity_params: []
+    reviewed: true
+  - id: content.ads.list
+    title: 广告列表
+    route: /operations/ad-list
+    menu_path: [内容管理, 广告位管理, 广告列表]
+    menu_key: content.ads.list
+    hidden: false
+    api_endpoints: [position_record, position_entry, position_record/add, position_record/update, position_record/del, position_modules, get_lang, cloud_file/sign, position_record/options]
+    description: ""
+    keywords: [广告列表, Ad List, 広告リスト]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.ads.entry
+    title: 广告位条目配置
+    route: /operations/ad-entry
+    menu_path: [内容管理, 广告位管理, 广告位条目配置]
+    menu_key: content.ads.entry
+    hidden: false
+    api_endpoints: [position_entry, position_entry/add, position_entry/update, position_entry/del, position_modules]
+    description: ""
+    keywords: [广告位条目配置, Ad Entry Config, 広告枠エントリー設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.message.manage
+    title: 消息管理
+    route: /operations/message-manage
+    menu_path: [内容管理, 消息管理, 消息管理]
+    menu_key: content.message.manage
+    hidden: false
+    api_endpoints: [message, message/send, get_lang]
+    description: ""
+    keywords: [消息管理, Message Management, メッセージ管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.message.emailCode
+    title: 查询验证码
+    route: /operations/email-code
+    menu_path: [内容管理, 消息管理, 查询验证码]
+    menu_key: content.message.emailCode
+    hidden: false
+    api_endpoints: [captcha/email_code, captcha/email_code_logs]
+    description: ""
+    keywords: [查询验证码, Email Code Lookup]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.mail.list
+    title: 邮件管理
+    route: /operations/mail-list
+    menu_path: [内容管理, 邮件PUSH, 邮件管理]
+    menu_key: content.mail.list
+    hidden: false
+    api_endpoints: [template_notice/events, template_notice/pages, template_notice, "template_notice/{id}", template_notice/test, template_layout/all, get_lang, cloud_file/sign]
+    description: ""
+    keywords: [邮件管理, Email Management, メール管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.mail.site
+    title: 站内信管理
+    route: /operations/site-list
+    menu_path: [内容管理, 邮件PUSH, 站内信管理]
+    menu_key: content.mail.site
+    hidden: false
+    api_endpoints: [template_notice/events, template_notice/pages, template_notice, "template_notice/{id}", template_notice/test, get_lang]
+    description: ""
+    keywords: [站内信管理, In-App Message Management, サイト内メッセージ管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.mail.layout
+    title: Layout管理
+    route: /operations/mail-templates
+    menu_path: [内容管理, 邮件PUSH, Layout管理]
+    menu_key: content.mail.layout
+    hidden: false
+    api_endpoints: [template_layout, "template_layout/{id}", cloud_file/sign]
+    description: ""
+    keywords: [Layout管理, Layout Management, レイアウト管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: content.articles
+    title: 文章管理
+    route: /operations/articles
+    menu_path: [内容管理, 文章管理]
+    menu_key: content.articles
+    hidden: false
+    api_endpoints: [articles, "articles/{id}", "articles/{id}/status", articles/options, cloud_file/sign]
+    description: ""
+    keywords: [文章管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.points.records
+    title: 积分明细
+    route: /marketing/points-records
+    menu_path: [市场活动, 积分, 积分明细]
+    menu_key: marketing.points.records
+    hidden: false
+    api_endpoints: [point_logs]
+    description: ""
+    keywords: [积分明细, Points Detail, ポイント明細]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.points.settings
+    title: 积分获取设置
+    route: /marketing/points-settings
+    menu_path: [市场活动, 积分, 积分获取设置]
+    menu_key: marketing.points.settings
+    hidden: false
+    api_endpoints: [point_rules, "point_rules/{pointRule}", "point_rules/{pointRule}/status", point_rules/events, point_rules/options, get_lang, cloud_file/sign]
+    description: ""
+    keywords: [Points Settings, ポイント設定, 积分获取设置]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.communityActivities.config
+    title: 活动配置
+    route: /marketing/community-activities
+    menu_path: [市场活动, 活动管理, 活动配置]
+    menu_key: marketing.communityActivities.config
+    hidden: false
+    api_endpoints: [community_activities/options, community_activities, "community_activities/{communityActivity}", "community_activities/{communityActivity}/void", "community_activities/{communityActivity}/publish", get_lang, cloud_file/sign]
+    description: ""
+    keywords: [活动配置, Activity Configuration, イベント設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.communityActivities.applications
+    title: 报名列表
+    route: /marketing/community-activities/applications
+    menu_path: [市场活动, 活动管理, 报名列表]
+    menu_key: marketing.communityActivities.applications
+    hidden: false
+    api_endpoints: [community_activity_applications, community_activities, community_activities/options]
+    description: ""
+    keywords: [报名列表, Application List, 申込一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.badges.list
+    title: 徽章列表
+    route: /marketing/badges
+    menu_path: [市场活动, 徽章, 徽章列表]
+    menu_key: marketing.badges.list
+    hidden: false
+    api_endpoints: [badges, "badges/{badgeId}", "badges/{badgeId}/status", badges/events, get_lang, cloud_file/sign]
+    description: ""
+    keywords: [徽章列表, Badges, バッジ一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.coupon.list
+    title: 优惠券列表
+    route: /marketing/coupon/list
+    menu_path: [市场活动, 优惠券管理, 优惠券列表]
+    menu_key: marketing.coupon.list
+    hidden: false
+    api_endpoints: [coupons, coupons/options, "coupons/{id}", "coupons/{id}/status", get_lang, source/list, source/types]
+    description: ""
+    keywords: [优惠券列表, Coupon List, クーポン一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.coupon.verify
+    title: 优惠券核销
+    route: /marketing/coupon/verify
+    menu_path: [市场活动, 优惠券管理, 优惠券核销]
+    menu_key: marketing.coupon.verify
+    hidden: false
+    api_endpoints: [user_coupons, user_coupons/export, coupons/options, "user_coupons/{userCouponId}/trade_cashback_details", "user_coupons/{userCouponId}/credit_bonus_details"]
+    description: ""
+    keywords: [优惠券核销, Coupon Verification, クーポン検証]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.delivery.list
+    title: 投递列表
+    route: /marketing/delivery/list
+    menu_path: [市场活动, 投递管理, 投递列表]
+    menu_key: marketing.delivery.list
+    hidden: false
+    api_endpoints: [grant_rules, grant_rules/options, grant_rules/events, "grant_rules/{id}", "grant_rules/{id}/status", grant_rules/users/validate, grant_rules/users/template, grant_rules/users/import]
+    description: ""
+    keywords: [投递列表, Delivery List, 配信一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: marketing.delivery.record
+    title: 投递记录
+    route: /marketing/delivery/record
+    menu_path: [市场活动, 投递管理, 投递记录]
+    menu_key: marketing.delivery.record
+    hidden: false
+    api_endpoints: [grant_records, grant_rules/options]
+    description: ""
+    keywords: [投递记录, Delivery Record, 配信記録]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: finance.cash.deposit
+    title: 入金管理
+    route: /finance/deposit
+    menu_path: [资金管理, 出入金管理, 入金管理]
+    menu_key: finance.cash.deposit
+    hidden: false
+    api_endpoints: [deposits, deposits/export, deposits/filters]
+    description: 查询和筛选客户入金记录，查看到账状态、充值类型、支付通道与金额。
+    keywords: [入金, 充值, 存款, 入金记录, 到账, deposit, 入金管理, Deposits]
+    capabilities: [按 User ID(user_code) 筛选入金记录, 按状态/入金状态/充值类型/支付通道筛选, 按入金时间(GMT+0)范围筛选, 导出入金记录, 从记录打开客户详情抽屉]
+    lookup_hint: 打开入金管理后，在顶部筛选栏填 User ID（user_code）并选择入金时间范围搜索。
+    entity_params: []
+    reviewed: true
+  - id: finance.cash.withdrawRisk
+    title: 出金审核-风控
+    route: /finance/withdraw-risk
+    menu_path: [资金管理, 出入金管理, 出金审核-风控]
+    menu_key: finance.cash.withdrawRisk
+    hidden: false
+    api_endpoints: [withdrawals/risk_apply, withdrawals/risk_apply/export, withdrawals/options, withdrawals/risk/audit, "users/funding_account/bonus/{userCode}"]
+    description: 出金申请的风控审核环节；风控通过后才会流转到财务审核。
+    keywords: [出金, 提现, 取款, 出金审核, 风控, 风控审核, 一审, withdraw, 出金审核-风控, Withdrawal Review - Risk, 出金審査-リスク]
+    capabilities: [按 user_code 或出金单号(order_no)筛选待风控的出金申请, 按状态/出金通道/出金时间筛选, 通过或拒绝风控审核, 审核确认弹窗中查看该用户的赠金信息, 导出风控出金记录]
+    lookup_hint: 打开本页后按 user_code 或出金单号（order_no）搜索。财务放款环节在「出金审核-财务」页，不在这里。
+    entity_params: []
+    reviewed: true
+  - id: finance.cash.withdrawFinance
+    title: 出金审核-财务
+    route: /finance/withdraw-finance
+    menu_path: [资金管理, 出入金管理, 出金审核-财务]
+    menu_key: finance.cash.withdrawFinance
+    hidden: false
+    api_endpoints: [withdrawals/finance_apply, withdrawals/finance_apply/export, withdrawals/options, withdrawals/finance/audit, withdrawals/finance/reject, withdrawals/finance/retry, "users/funding_account/bonus/{userCode}"]
+    description: 出金申请的财务审核与出款环节，处理放款、驳回与出款失败重试。
+    keywords: [出金, 提现, 取款, 出金审核, 财务审核, 出款, 打款, 二审, 重试, withdraw, 出金审核-财务, Withdrawal Review - Finance, 出金審査-財務]
+    capabilities: [按 user_code 或出金单号(order_no)筛选待财务处理的出金, 按状态/出金通道/出金时间筛选, 财务通过或驳回出金申请, 对出款失败的记录发起重试, 导出财务出金记录]
+    lookup_hint: 打开本页后按 user_code 或出金单号（order_no）搜索。风控环节在「出金审核-风控」页。
+    entity_params: []
+    reviewed: true
+  - id: finance.cash.rate
+    title: 汇率管理
+    route: /finance/rates
+    menu_path: [资金管理, 出入金管理, 汇率管理]
+    menu_key: finance.cash.rate
+    hidden: false
+    api_endpoints: [currency_spreads]
+    description: 维护出入金换算使用的币种汇率与点差。
+    keywords: [汇率, 点差, 币种, 换算, exchange rate, spread, 汇率管理, Exchange Rates, 為替レート管理]
+    capabilities: [按币种筛选汇率, 新增汇率配置, 修改汇率配置]
+    lookup_hint: 打开本页后按币种筛选。
+    entity_params: []
+    reviewed: true
+  - id: finance.cash.networkConfigs
+    title: 出入金网络配置
+    route: /finance/funding-network-configs
+    menu_path: [资金管理, 出入金管理, 出入金网络配置]
+    menu_key: finance.cash.networkConfigs
+    hidden: false
+    api_endpoints: [funding_network_configs, funding_network_configs/options, "funding_network_configs/{id}", "funding_network_configs/{id}/status"]
+    description: 配置出入金支持的网络（链）、币种与通道，以及各自的启停状态。
+    keywords: [出入金网络, 链, 网络配置, 通道, 币种, 充提配置, TRC20, ERC20, network, 出入金网络配置, Funding Network Config, 出金入金ネットワーク設定]
+    capabilities: [按配置类型/网络/币种/通道/状态筛选, 新增与修改网络配置, 启用或停用网络配置, 删除网络配置]
+    lookup_hint: 打开本页后按配置类型（入金/出金）与币种筛选。
+    entity_params: []
+    reviewed: true
+  - id: finance.fund
+    title: 资金管理
+    route: /finance/fund-management
+    menu_path: [资金管理, 资金管理]
+    menu_key: finance.fund
+    hidden: false
+    api_endpoints: [fund_flows/management, fund_flows, fund_flows/management/types, wallet_import/template, wallet_import/import, wallet_import/list, "wallet_import/detail/{jobId}", "wallet_import/detail/{jobId}/export", wallet_import/execute]
+    description: 人工资金调整入口：支持单笔加减款，以及按钱包文件批量导入并执行。
+    keywords: [资金调整, 加款, 减款, 手动调账, 调整余额, 批量导入, 钱包导入, 赠金, fund management, 资金管理, 資金管理]
+    capabilities: [按 user_code/方向/资金类型/操作时间查询单笔操作记录, 提交单笔加款或减款, 下载批量导入模板并上传钱包文件, 查看批量任务明细并执行, 导出批量任务明细]
+    lookup_hint: 单笔操作记录按 user_code 查；批量任务按创建人、创建时间与状态筛选。
+    entity_params: []
+    reviewed: true
+  - id: finance.flows.transactions
+    title: 资金流水
+    route: /finance/transactions
+    menu_path: [资金管理, 流水管理, 资金流水]
+    menu_key: finance.flows.transactions
+    hidden: false
+    api_endpoints: [fund_flows, fund_flows/export, fund_flows/types]
+    description: 平台资金流水总账，汇总各类资金收支明细，可用于对账。
+    keywords: [资金流水, 流水, 账变, 收支明细, 对账, transactions, fund flow, Transactions, 資金トランザクション]
+    capabilities: [按 user_code/交易账号(login)/订单号(ticket)筛选流水, 按资金类型与账户类型筛选, 按创建时间范围筛选, 导出资金流水]
+    lookup_hint: 打开资金流水后按 user_code 或 ticket 搜索。只想看入金或出金，请分别去入金管理、出金审核页。
+    entity_params: []
+    reviewed: true
+  - id: agents.relationship.applications
+    title: 代理申请列表
+    route: /agents/relationship/applications
+    menu_path: [代理管理, 代理关系管理, 代理申请列表]
+    menu_key: agents.relationship.applications
+    hidden: false
+    api_endpoints: [ib_applications, ib_applications/pending_count, ib_applications/export, ib_applications/approve, ib_applications/reject]
+    description: 审核客户提交的代理（IB）申请，通过后该客户成为代理商。
+    keywords: [代理申请, IB 申请, 代理审核, 申请列表, 成为代理, agent application, 代理申请列表, Agent Application List, 代理申請一覧]
+    capabilities: [按 user_code/状态/申请时间/操作人筛选申请, 查看待审核数量, 通过或拒绝代理申请, 导出申请列表]
+    lookup_hint: 打开本页后按 user_code 搜索；点某条记录会跳到「代理申请详情」页。
+    entity_params: []
+    reviewed: true
+  - id: agents.relationship.applications:applicationId
+    title: 代理申请详情
+    route: /agents/relationship/applications/:applicationId
+    menu_path: [代理管理, 代理关系管理, 代理申请详情]
+    menu_key: agents.relationship.applications
+    hidden: true
+    api_endpoints: [ib_applications, ib_applications/pending_count, ib_applications/approve, ib_applications/reject]
+    description: 单条代理申请的详情页，可在页面内直接通过或拒绝。
+    keywords: [代理申请详情, 申请详情, application detail, Agent Application Detail, 代理申請詳細]
+    capabilities: [查看单条代理申请详情, 通过或拒绝该条申请]
+    lookup_hint: 从「代理申请列表」点击某条记录进入；URL 需要 applicationId。
+    entity_params: [applicationId]
+    reviewed: true
+  - id: agents.relationship.list
+    title: 代理商列表
+    route: /agents/relationship/list
+    menu_path: [代理管理, 代理关系管理, 代理商列表]
+    menu_key: agents.relationship.list
+    hidden: false
+    api_endpoints: [ib_accounts, ib_accounts/export, ib_accounts/level, "ib_accounts/{ibId}/self_commission", ib_levels]
+    description: 代理商（IB）账号列表，可看代理等级、上级代理、自身佣金与保护期状态。
+    keywords: [代理商, 代理列表, 代理账号, 上级代理, 代理等级, IB, IB 列表, agent, 代理商列表, Agent List, 代理店一覧]
+    capabilities: [按 user_code/IB ID/上级 IB/等级/用户类型/佣金状态/保护期状态筛选, 调整代理等级, 查看代理自身佣金, 查看该代理的下级结构, 导出代理列表]
+    lookup_hint: 打开代理商列表后按 user_code 或 IB ID 搜索；看下级团队点该行进入「代理结构」页。
+    entity_params: []
+    reviewed: true
+  - id: agents.relationship.list:structure
+    title: 代理结构
+    route: /agents/relationship/structure/:ibId
+    menu_path: [代理管理, 代理关系管理, 代理结构]
+    menu_key: agents.relationship.list
+    hidden: true
+    api_endpoints: ["ib_accounts/{ibId}/children", ib_accounts, ib_accounts/level, ib_levels]
+    description: 某个代理的下级代理结构树。
+    keywords: [代理结构, 下级代理, 代理关系, 团队结构, structure, Agent Structure, 代理構造]
+    capabilities: [查看指定代理的下级代理, 调整下级代理的等级]
+    lookup_hint: 从「代理商列表」点击某个代理进入；URL 需要 ibId。
+    entity_params: [ibId]
+    reviewed: true
+  - id: agents.level.config
+    title: 代理等级配置
+    route: /agents/levels/config
+    menu_path: [代理管理, 代理等级管理, 代理等级配置]
+    menu_key: agents.level.config
+    hidden: false
+    api_endpoints: [ib_levels, "ib_levels/{levelId}", ib_commission_rules, get_lang]
+    description: 配置代理等级及其绑定的佣金规则与多语言名称。
+    keywords: [代理等级, 等级配置, IB 等级, 升级条件, level config, 代理等级配置, Agent Level Configuration, 代理レベル設定]
+    capabilities: [按等级名称与层级筛选, 新增与编辑代理等级, 为等级绑定佣金规则]
+    lookup_hint: 打开本页后按等级名称筛选。
+    entity_params: []
+    reviewed: true
+  - id: agents.commission.configs
+    title: 佣金配置列表
+    route: /agents/commission/configs
+    menu_path: [代理管理, 佣金配置管理, 佣金配置列表]
+    menu_key: agents.commission.configs
+    hidden: false
+    api_endpoints: [ib_commission_rules, ib_commission_records/sources, get_lang]
+    description: 代理佣金规则的配置列表，含生效状态与审核状态。
+    keywords: [佣金配置, 佣金规则, 返佣规则, 佣金比例, 佣金设置, commission rule, 佣金配置列表, Commission Config List, コミッション設定一覧]
+    capabilities: [按规则名称/等级/生效状态/审核状态筛选, 进入新增佣金规则页, 进入佣金规则详情页]
+    lookup_hint: 本页是规则配置。要查某笔佣金发了多少、结算没结算，请去「佣金记录管理」页。
+    entity_params: []
+    reviewed: true
+  - id: agents.commission.configs:create
+    title: 新增佣金规则
+    route: /agents/commission/configs/create
+    menu_path: [代理管理, 佣金配置管理, 新增佣金规则]
+    menu_key: agents.commission.configs
+    hidden: true
+    api_endpoints: [ib_commission_rules, ib_commission_records/sources, get_lang]
+    description: 新增代理佣金规则。
+    keywords: [新增佣金规则, 创建佣金规则, create commission rule, Create Commission Rule, コミッションルールを追加]
+    capabilities: [填写并提交新的佣金规则]
+    lookup_hint: 从「佣金配置列表」点新增进入。
+    entity_params: []
+    reviewed: true
+  - id: agents.commission.configs:detail
+    title: 佣金配置详情
+    route: /agents/commission/configs/:commissionRuleId/detail
+    menu_path: [代理管理, 佣金配置管理, 佣金配置详情]
+    menu_key: agents.commission.configs
+    hidden: true
+    api_endpoints: ["ib_commission_rules/{commissionRuleId}", "ib_commission_rules/{commissionRuleId}/detail", "ib_commission_rules/{commissionRuleId}/review", ib_commission_records/sources, get_lang]
+    description: 单条佣金规则的详情与审核页。
+    keywords: [佣金配置详情, 佣金规则详情, 佣金规则审核, commission rule detail, Commission Config Detail, コミッション設定詳細]
+    capabilities: [查看佣金规则明细, 审核佣金规则]
+    lookup_hint: 从「佣金配置列表」点击某条规则进入；URL 需要 commissionRuleId。
+    entity_params: [commissionRuleId]
+    reviewed: true
+  - id: agents.commission.records
+    title: 佣金记录管理
+    route: /agents/commission/records
+    menu_path: [代理管理, 佣金配置管理, 佣金记录管理]
+    menu_key: agents.commission.records
+    hidden: false
+    api_endpoints: [ib_commission_records, ib_commission_records/export, ib_commission_records/reject, "ib_commission_records/{commissionRecordId}/allocations", ib_levels]
+    description: 代理佣金的发放记录，按订单结算，含结算状态与分配明细。
+    keywords: [佣金记录, 佣金明细, 返佣记录, 佣金结算, 佣金到账, commission record, 佣金记录管理, Commission Record Management, コミッション記録管理]
+    capabilities: [按订单号(ticket)/佣金来源/结算状态筛选, 按平仓时间与结算时间筛选, 查看单条佣金的分配明细, 驳回佣金记录, 导出佣金记录]
+    lookup_hint: 打开佣金记录管理后按 ticket（订单号）搜索，或按结算时间范围筛选。佣金比例怎么配的在「佣金配置列表」页。
+    entity_params: []
+    reviewed: true
+  - id: masters.applications
+    title: 高手申请列表
+    route: /masters/applications
+    menu_path: [高手管理, 高手申请列表]
+    menu_key: masters.applications
+    hidden: false
+    api_endpoints: [copytrading/master_applications, copytrading/master_applications/export, copytrading/master_applications/options, "copytrading/master_applications/{id}/review"]
+    description: ""
+    keywords: [高手申请列表, Master Application List, 高手申請一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: masters.level-config
+    title: 等级配置
+    route: /masters/level-config
+    menu_path: [高手管理, 等级配置]
+    menu_key: masters.level-config
+    hidden: false
+    api_endpoints: [copytrading/master_levels, copytrading/master_levels/options, "copytrading/master_levels/{levelId}", get_lang]
+    description: ""
+    keywords: [等级配置, Level Configuration, レベル設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: masters.potential
+    title: 潜在高手
+    route: /masters/potential
+    menu_path: [高手管理, 潜在高手]
+    menu_key: masters.potential
+    hidden: false
+    api_endpoints: [copytrading/potential-masters, copytrading/potential-masters/export, "copytrading/potential-masters/{tradeAccountId}/change-status", copytrading/master_levels/options]
+    description: ""
+    keywords: [潜在高手, Potential Masters]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: masters.list
+    title: 高手管理
+    route: /masters/list
+    menu_path: [高手管理, 高手管理]
+    menu_key: masters.list
+    hidden: false
+    api_endpoints: [copytrading/masters, copytrading/masters/export, "copytrading/masters/{masterUserCode}/change-status", copytrading/masters/protection-time, copytrading/master_levels/options]
+    description: ""
+    keywords: [高手管理, Masters Management]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: masters.followRelations
+    title: 跟随关系管理
+    route: /masters/follow-relations
+    menu_path: [高手管理, 跟随关系管理]
+    menu_key: masters.followRelations
+    hidden: false
+    api_endpoints: [copytrading/follow_relations, copytrading/follow_relations/export]
+    description: ""
+    keywords: [跟随关系管理, Follow Relations, 跟随関係管理]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: masters.profitSharing
+    title: 分润结算
+    route: /masters/profit-sharing
+    menu_path: [高手管理, 分润结算]
+    menu_key: masters.profitSharing
+    hidden: false
+    api_endpoints: [copytrading/commission_records, copytrading/commission_records/export, copytrading/master_levels/options]
+    description: 跟单高手的分润结算记录：按订单记录高手从跟随者收益中获得的分润。
+    keywords: [分润, 分润结算, 跟单分润, 高手分润, 跟单佣金, 提成, profit sharing, Profit Sharing, 利益分配決済]
+    capabilities: [按高手 user_code 与跟随者 user_code 筛选, 按高手等级、交易账号与账号类型筛选, 按订单号、平仓时间与分润时间筛选, 按结算状态筛选, 导出分润记录]
+    lookup_hint: 本页是跟单分润。代理返佣是另一回事，在「佣金记录管理」页。
+    entity_params: []
+    reviewed: true
+  - id: symbol.manage.list
+    title: 品种列表
+    route: /symbols/list
+    menu_path: [品种, 品种, 品种列表]
+    menu_key: symbol.manage.list
+    hidden: false
+    api_endpoints: [source/list, source/update, source/types, get_lang, cloud_file/sign]
+    description: ""
+    keywords: [品种列表, Instrument List, 銘柄一覧]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: settings.roles.settings
+    title: 角色管理设置
+    route: /roles/settings
+    menu_path: [设置, 角色管理, 角色管理设置]
+    menu_key: settings.roles.settings
+    hidden: false
+    api_endpoints: [roles, "roles/{roleId}/status"]
+    description: ""
+    keywords: [角色管理设置, Role Settings, ロール設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: settings.roles.settings:create
+    title: 创建角色
+    route: /roles/create
+    menu_path: [设置, 角色管理, 创建角色]
+    menu_key: settings.roles.settings
+    hidden: true
+    api_endpoints: [roles/add, menus]
+    description: ""
+    keywords: [创建角色]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: settings.roles.settings:edit
+    title: 修改角色
+    route: /roles/edit/:roleId
+    menu_path: [设置, 角色管理, 修改角色]
+    menu_key: settings.roles.settings
+    hidden: true
+    api_endpoints: ["roles/{roleId}", menus]
+    description: ""
+    keywords: [修改角色]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: [roleId]
+    reviewed: false
+  - id: settings.users.settings
+    title: 用户设置管理
+    route: /users/settings
+    menu_path: [设置, 用户管理, 用户设置管理]
+    menu_key: settings.users.settings
+    hidden: false
+    api_endpoints: [managers, managers/modify, managers/generate_password, "managers/change/{id}/{status}", managers/reset, roles, user_levels]
+    description: 管理后台管理员账号——不是终端客户。含账号创建、角色分配、启停与密码重置。
+    keywords: [后台用户, 后台账号, 管理员, 管理员账号, 员工账号, 用户设置, manager, admin user, 用户设置管理, User Settings Management, ユーザー設定管理]
+    capabilities: [新增后台管理员账号, 修改管理员信息与所属角色, 启用或停用管理员账号, 生成与重置登录密码]
+    lookup_hint: 这里管的是后台管理员账号。要找终端交易客户请去「客户列表」页。
+    entity_params: []
+    reviewed: true
+  - id: settings.menu.settings
+    title: 菜单管理设置
+    route: /menu/settings
+    menu_path: [设置, 菜单管理, 菜单管理设置]
+    menu_key: settings.menu.settings
+    hidden: false
+    api_endpoints: [menus, "menus/{menuId}", "menus/{menuId}/status"]
+    description: ""
+    keywords: [菜单管理设置, Menu Settings, メニュー設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: settings.appReleases
+    title: 版本设置
+    route: /settings/app-releases
+    menu_path: [设置, 版本设置]
+    menu_key: settings.appReleases
+    hidden: false
+    api_endpoints: [app_releases, "app_releases/{id}", app_releases/platform_options, get_lang]
+    description: ""
+    keywords: [版本设置, Version Settings, バージョン設定]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false
+  - id: settings.password.change
+    title: 修改密码
+    route: /settings/change-password
+    menu_path: [设置, 修改密码]
+    menu_key: settings.password.change
+    hidden: false
+    api_endpoints: [managers/password]
+    description: ""
+    keywords: [修改密码, Change Password, パスワード変更]
+    capabilities: []
+    lookup_hint: ""
+    entity_params: []
+    reviewed: false

@@ -1,0 +1,32 @@
+{
+  "server": {
+    "addr": "127.0.0.1:8081"
+  },
+  "auth": {
+    "service_token": "replace-with-a-random-local-token",
+    "default_permissions": [
+      "admin.api.ping.read",
+      "admin.api.deposits.read",
+      "admin.api.commissions.read",
+      "admin.console.navigation.read"
+    ]
+  },
+  "admin_api": {
+    "base_url": "http://127.0.0.1:8000",
+    "timeout": "5s",
+    "credentials": {
+      "cookies": {
+        "session_id": "",
+        "XSRF-TOKEN": ""
+      }
+    }
+  },
+  "admin_console": {
+    "base_url": "http://127.0.0.1:5173"
+  },
+  "rate_limit": {
+    "requests_per_minute": 60,
+    "burst": 10
+  },
+  "log_level": "info"
+}

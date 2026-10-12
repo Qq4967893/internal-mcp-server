@@ -1,0 +1,480 @@
+# 人工维护的导航描述。生成器只搬运这里的字段，不会改写本文件。
+#
+# 索引键是 pages.yaml 里的 `id`。对绝大多数页面 id 就等于 menu_key；
+# 少数与列表页共用 menu_key 的隐藏页（详情/新建/编辑）带一段 `:后缀`，
+# 详见 README.md「id 怎么来」。
+#
+# 本轮只精写运营高频域（finance / customers / orders / agents + 分润结算），
+# 外加 settings.users.settings —— 它和客户列表存在「用户」歧义，必须两边都标注。
+# 其余页面靠 title 与三语 i18n 标题兜底，生成器会自动补进 keywords。
+#
+# 所有条目均为按代码信号批量起草，reviewed: false 表示尚未人工逐条复核。
+
+known_gaps:
+  - topic: KYC / 实名认证
+    note: admin-frontend 中不存在任何 KYC、实名认证相关的页面、路由或接口（已全量检索确认）。
+    keywords: [kyc, 实名, 实名认证, 身份认证, 身份验证, 证件审核, identity verification]
+
+  - topic: 工单 / 客服会话
+    note: 后台没有工单系统或客服会话入口；与客户的触达手段只有内容管理下的消息管理、邮件管理与站内信管理。
+    keywords: [工单, 客服, 客诉, 投诉, 客服会话, ticket]
+
+  - topic: 公告管理
+    note: 没有独立的「公告」页面。最接近的是内容管理下的文章管理、站内信管理与消息管理。
+    keywords: [公告, 通告, 全站通知, announcement]
+
+  - topic: 风控规则配置
+    note: 后台没有风控规则/风控策略的配置页面。风控只有逐笔人工审核入口（出金审核-风控），以及黑名单页上的权限限制开关。
+    keywords: [风控规则, 风控策略, 风控配置, 风控模型, risk rule]
+
+  - topic: 单条记录的直达链接
+    note: "全站只有 4 条带动态段的路由（代理申请详情、代理结构、佣金配置详情、修改角色），其余页面都没有指向单条记录的 URL。客户详情是 React state 里的抽屉，不写 URL；列表页也不支持 ?user_code= 之类的预填参数。因此除这 4 条外只能给页面级链接，靠 lookup_hint 说明进页面后怎么找。"
+    keywords: [深链, 直达链接, 记录链接, 详情页链接, deep link]
+
+  - topic: 按当前运营用户的权限过滤
+    note: "manifest 只携带 menu_key 作为信息，不做权限过滤 —— MCP 下游是一套共享的静态 cookie，拿不到当前运营用户真实的 menu_keys[]。回答里应说明「能否打开取决于你的后台权限」。"
+    keywords: [权限过滤, 权限校验, 按权限过滤, 有没有权限]
+
+pages:
+  # ============ 资金 ============
+  finance.cash.deposit:
+    description: "查询和筛选客户入金记录，查看到账状态、充值类型、支付通道与金额。"
+    keywords:
+      - 入金
+      - 充值
+      - 存款
+      - 入金记录
+      - 到账
+      - deposit
+    capabilities:
+      - 按 User ID(user_code) 筛选入金记录
+      - 按状态/入金状态/充值类型/支付通道筛选
+      - 按入金时间(GMT+0)范围筛选
+      - 导出入金记录
+      - 从记录打开客户详情抽屉
+    lookup_hint: "打开入金管理后，在顶部筛选栏填 User ID（user_code）并选择入金时间范围搜索。"
+    reviewed: true
+
+  finance.cash.withdrawRisk:
+    description: "出金申请的风控审核环节；风控通过后才会流转到财务审核。"
+    keywords:
+      - 出金
+      - 提现
+      - 取款
+      - 出金审核
+      - 风控
+      - 风控审核
+      - 一审
+      - withdraw
+    capabilities:
+      - 按 user_code 或出金单号(order_no)筛选待风控的出金申请
+      - 按状态/出金通道/出金时间筛选
+      - 通过或拒绝风控审核
+      - 审核确认弹窗中查看该用户的赠金信息
+      - 导出风控出金记录
+    lookup_hint: "打开本页后按 user_code 或出金单号（order_no）搜索。财务放款环节在「出金审核-财务」页，不在这里。"
+    reviewed: true
+
+  finance.cash.withdrawFinance:
+    description: "出金申请的财务审核与出款环节，处理放款、驳回与出款失败重试。"
+    keywords:
+      - 出金
+      - 提现
+      - 取款
+      - 出金审核
+      - 财务审核
+      - 出款
+      - 打款
+      - 二审
+      - 重试
+      - withdraw
+    capabilities:
+      - 按 user_code 或出金单号(order_no)筛选待财务处理的出金
+      - 按状态/出金通道/出金时间筛选
+      - 财务通过或驳回出金申请
+      - 对出款失败的记录发起重试
+      - 导出财务出金记录
+    lookup_hint: "打开本页后按 user_code 或出金单号（order_no）搜索。风控环节在「出金审核-风控」页。"
+    reviewed: true
+
+  finance.cash.rate:
+    description: "维护出入金换算使用的币种汇率与点差。"
+    keywords:
+      - 汇率
+      - 点差
+      - 币种
+      - 换算
+      - exchange rate
+      - spread
+    capabilities:
+      - 按币种筛选汇率
+      - 新增汇率配置
+      - 修改汇率配置
+    lookup_hint: "打开本页后按币种筛选。"
+    reviewed: true
+
+  finance.cash.networkConfigs:
+    description: "配置出入金支持的网络（链）、币种与通道，以及各自的启停状态。"
+    keywords:
+      - 出入金网络
+      - 链
+      - 网络配置
+      - 通道
+      - 币种
+      - 充提配置
+      - TRC20
+      - ERC20
+      - network
+    capabilities:
+      - 按配置类型/网络/币种/通道/状态筛选
+      - 新增与修改网络配置
+      - 启用或停用网络配置
+      - 删除网络配置
+    lookup_hint: "打开本页后按配置类型（入金/出金）与币种筛选。"
+    reviewed: true
+
+  finance.fund:
+    description: "人工资金调整入口：支持单笔加减款，以及按钱包文件批量导入并执行。"
+    keywords:
+      - 资金调整
+      - 加款
+      - 减款
+      - 手动调账
+      - 调整余额
+      - 批量导入
+      - 钱包导入
+      - 赠金
+      - fund management
+    capabilities:
+      - 按 user_code/方向/资金类型/操作时间查询单笔操作记录
+      - 提交单笔加款或减款
+      - 下载批量导入模板并上传钱包文件
+      - 查看批量任务明细并执行
+      - 导出批量任务明细
+    lookup_hint: "单笔操作记录按 user_code 查；批量任务按创建人、创建时间与状态筛选。"
+    reviewed: true
+
+  finance.flows.transactions:
+    description: "平台资金流水总账，汇总各类资金收支明细，可用于对账。"
+    keywords:
+      - 资金流水
+      - 流水
+      - 账变
+      - 收支明细
+      - 对账
+      - transactions
+      - fund flow
+    capabilities:
+      - 按 user_code/交易账号(login)/订单号(ticket)筛选流水
+      - 按资金类型与账户类型筛选
+      - 按创建时间范围筛选
+      - 导出资金流水
+    lookup_hint: "打开资金流水后按 user_code 或 ticket 搜索。只想看入金或出金，请分别去入金管理、出金审核页。"
+    reviewed: true
+
+  # ============ 客户 ============
+  customer.manage.list:
+    description: "平台终端客户（交易用户）档案的查询与筛选入口；点击某行可打开客户详情抽屉，查看其资金、交易、代理与跟随信息。"
+    keywords:
+      - 客户
+      - 客户列表
+      - 终端客户
+      - 交易用户
+      - 注册用户
+      - 客户档案
+      - user_code
+      - customer
+      - 用户列表
+      - 终端用户
+    capabilities:
+      - 按编号/用户名/邮箱关键词搜索客户
+      - 按付款状态筛选
+      - 按注册时间筛选并排序
+      - 导出客户列表
+      - 打开客户详情抽屉
+      - 转移客户归属
+    lookup_hint: "打开客户列表后在顶部「关键词」输入框填编号、用户名或邮箱搜索。客户详情是弹出抽屉、不写 URL，所以没法直接深链到某一个客户。注意本页是终端交易客户；后台管理员账号在「用户设置管理」页。"
+    reviewed: true
+
+  customer.manage.loginLogs:
+    description: "查询终端客户的登录记录，含登录时间、登录方式、国家/地区与设备信息。"
+    keywords:
+      - 登录日志
+      - 登录记录
+      - 登陆记录
+      - 登录历史
+      - 设备
+      - IP
+      - login logs
+    capabilities:
+      - 按关键词类型+关键词搜索登录记录
+      - 按登录时间范围筛选
+      - 按登录方式与国家/地区筛选
+      - 导出登录日志
+    lookup_hint: "打开本页后先在顶部选「关键词类型」（如 user_code、邮箱），再填关键词，并用登录时间范围收窄。"
+    reviewed: true
+
+  customer.dashboard.bi:
+    description: "客户侧经营数据看板，展示注册、入金、交易等核心指标汇总与趋势图。"
+    keywords:
+      - 数据看板
+      - 数据概览
+      - 大盘
+      - 报表
+      - 指标
+      - 趋势
+      - BI
+      - dashboard
+    capabilities:
+      - 查看客户核心指标汇总
+      - 查看指标趋势图
+      - 切换趋势图的统计粒度
+    lookup_hint: "本页只有汇总指标，查不了单个客户；要查某个人请去「客户列表」。"
+    reviewed: true
+
+  customer.special.blacklist:
+    description: "维护黑名单客户，并按需限制其入金、出金、交易等权限。"
+    keywords:
+      - 黑名单
+      - 拉黑
+      - 封禁
+      - 限制
+      - 风控名单
+      - blacklist
+    capabilities:
+      - 按 user_code/邮箱/加入时间/注册时间筛选黑名单
+      - 新增黑名单客户
+      - 编辑黑名单的限制权限
+      - 移出黑名单
+      - 导出黑名单
+    lookup_hint: "要确认某个客户是不是黑名单，直接在本页按他的 user_code 或邮箱搜。"
+    reviewed: true
+
+  customer.special.whitelist:
+    description: "维护白名单客户名单。"
+    keywords:
+      - 白名单
+      - 免审
+      - 特殊客户
+      - whitelist
+    capabilities:
+      - 按 user_code 筛选白名单
+      - 导出白名单
+    lookup_hint: "打开本页后按 user_code 搜索。"
+    reviewed: true
+
+  # ============ 订单 ============
+  order.trade.positions:
+    description: "已成交订单的查询入口（含持仓与历史平仓），可看开平仓时间、手数、盈亏与所属交易账号。"
+    keywords:
+      - 订单
+      - 订单列表
+      - 成交订单
+      - 交易记录
+      - 持仓
+      - 平仓
+      - 单号
+      - ticket
+      - order
+      - trade
+    capabilities:
+      - 按 user_code/交易账号(login)/订单号(ticket)搜索
+      - 按开仓时间与平仓时间筛选
+      - 按账户类型与是否平仓筛选
+      - 导出订单
+      - 打开订单详情抽屉
+    lookup_hint: "打开订单列表后在顶部按 ticket（订单号）、login（交易账号）或 user_code 搜索；没有指向单条订单的 URL。"
+    reviewed: true
+
+  order.trade.pending:
+    description: "尚未成交的挂单查询入口，可看挂单价格、类型与挂单时间。"
+    keywords:
+      - 挂单
+      - 挂单列表
+      - 未成交
+      - 委托
+      - 限价单
+      - pending order
+    capabilities:
+      - 按 user_code/交易账号(login)/订单号(ticket)搜索挂单
+      - 按挂单时间筛选
+      - 导出挂单列表
+    lookup_hint: "本页只有未成交挂单；已成交的在「订单列表」页。"
+    reviewed: true
+
+  # ============ 代理 ============
+  agents.relationship.applications:
+    description: "审核客户提交的代理（IB）申请，通过后该客户成为代理商。"
+    keywords:
+      - 代理申请
+      - IB 申请
+      - 代理审核
+      - 申请列表
+      - 成为代理
+      - agent application
+    capabilities:
+      - 按 user_code/状态/申请时间/操作人筛选申请
+      - 查看待审核数量
+      - 通过或拒绝代理申请
+      - 导出申请列表
+    lookup_hint: "打开本页后按 user_code 搜索；点某条记录会跳到「代理申请详情」页。"
+    reviewed: true
+
+  agents.relationship.applications:applicationId:
+    description: "单条代理申请的详情页，可在页面内直接通过或拒绝。"
+    keywords:
+      - 代理申请详情
+      - 申请详情
+      - application detail
+    capabilities:
+      - 查看单条代理申请详情
+      - 通过或拒绝该条申请
+    lookup_hint: "从「代理申请列表」点击某条记录进入；URL 需要 applicationId。"
+    reviewed: true
+
+  agents.relationship.list:
+    description: "代理商（IB）账号列表，可看代理等级、上级代理、自身佣金与保护期状态。"
+    keywords:
+      - 代理商
+      - 代理列表
+      - 代理账号
+      - 上级代理
+      - 代理等级
+      - IB
+      - IB 列表
+      - agent
+    capabilities:
+      - 按 user_code/IB ID/上级 IB/等级/用户类型/佣金状态/保护期状态筛选
+      - 调整代理等级
+      - 查看代理自身佣金
+      - 查看该代理的下级结构
+      - 导出代理列表
+    lookup_hint: "打开代理商列表后按 user_code 或 IB ID 搜索；看下级团队点该行进入「代理结构」页。"
+    reviewed: true
+
+  agents.relationship.list:structure:
+    description: "某个代理的下级代理结构树。"
+    keywords:
+      - 代理结构
+      - 下级代理
+      - 代理关系
+      - 团队结构
+      - structure
+    capabilities:
+      - 查看指定代理的下级代理
+      - 调整下级代理的等级
+    lookup_hint: "从「代理商列表」点击某个代理进入；URL 需要 ibId。"
+    reviewed: true
+
+  agents.level.config:
+    description: "配置代理等级及其绑定的佣金规则与多语言名称。"
+    keywords:
+      - 代理等级
+      - 等级配置
+      - IB 等级
+      - 升级条件
+      - level config
+    capabilities:
+      - 按等级名称与层级筛选
+      - 新增与编辑代理等级
+      - 为等级绑定佣金规则
+    lookup_hint: "打开本页后按等级名称筛选。"
+    reviewed: true
+
+  agents.commission.configs:
+    description: "代理佣金规则的配置列表，含生效状态与审核状态。"
+    keywords:
+      - 佣金配置
+      - 佣金规则
+      - 返佣规则
+      - 佣金比例
+      - 佣金设置
+      - commission rule
+    capabilities:
+      - 按规则名称/等级/生效状态/审核状态筛选
+      - 进入新增佣金规则页
+      - 进入佣金规则详情页
+    lookup_hint: "本页是规则配置。要查某笔佣金发了多少、结算没结算，请去「佣金记录管理」页。"
+    reviewed: true
+
+  agents.commission.configs:create:
+    description: "新增代理佣金规则。"
+    keywords:
+      - 新增佣金规则
+      - 创建佣金规则
+      - create commission rule
+    capabilities:
+      - 填写并提交新的佣金规则
+    lookup_hint: "从「佣金配置列表」点新增进入。"
+    reviewed: true
+
+  agents.commission.configs:detail:
+    description: "单条佣金规则的详情与审核页。"
+    keywords:
+      - 佣金配置详情
+      - 佣金规则详情
+      - 佣金规则审核
+      - commission rule detail
+    capabilities:
+      - 查看佣金规则明细
+      - 审核佣金规则
+    lookup_hint: "从「佣金配置列表」点击某条规则进入；URL 需要 commissionRuleId。"
+    reviewed: true
+
+  agents.commission.records:
+    description: "代理佣金的发放记录，按订单结算，含结算状态与分配明细。"
+    keywords:
+      - 佣金记录
+      - 佣金明细
+      - 返佣记录
+      - 佣金结算
+      - 佣金到账
+      - commission record
+    capabilities:
+      - 按订单号(ticket)/佣金来源/结算状态筛选
+      - 按平仓时间与结算时间筛选
+      - 查看单条佣金的分配明细
+      - 驳回佣金记录
+      - 导出佣金记录
+    lookup_hint: "打开佣金记录管理后按 ticket（订单号）搜索，或按结算时间范围筛选。佣金比例怎么配的在「佣金配置列表」页。"
+    reviewed: true
+
+  # ============ 分润（佣金类问题实测会问到） ============
+  masters.profitSharing:
+    description: "跟单高手的分润结算记录：按订单记录高手从跟随者收益中获得的分润。"
+    keywords:
+      - 分润
+      - 分润结算
+      - 跟单分润
+      - 高手分润
+      - 跟单佣金
+      - 提成
+      - profit sharing
+    capabilities:
+      - 按高手 user_code 与跟随者 user_code 筛选
+      - 按高手等级、交易账号与账号类型筛选
+      - 按订单号、平仓时间与分润时间筛选
+      - 按结算状态筛选
+      - 导出分润记录
+    lookup_hint: "本页是跟单分润。代理返佣是另一回事，在「佣金记录管理」页。"
+    reviewed: true
+
+  # ============ 后台账号（与「客户列表」存在「用户」歧义，必须标注） ============
+  settings.users.settings:
+    description: "管理后台管理员账号——不是终端客户。含账号创建、角色分配、启停与密码重置。"
+    keywords:
+      - 后台用户
+      - 后台账号
+      - 管理员
+      - 管理员账号
+      - 员工账号
+      - 用户设置
+      - manager
+      - admin user
+    capabilities:
+      - 新增后台管理员账号
+      - 修改管理员信息与所属角色
+      - 启用或停用管理员账号
+      - 生成与重置登录密码
+    lookup_hint: "这里管的是后台管理员账号。要找终端交易客户请去「客户列表」页。"
+    reviewed: true

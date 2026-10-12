@@ -1,0 +1,8 @@
+[mcp_servers.internal_blockmatrix]
+url = "http://127.0.0.1:9090/mcp"
+bearer_token_env_var = "INTERNAL_ADMIN_TOKEN"
+env_http_headers = {
+  "X-Copilot-User-Id" = "COPILOT_USER_ID",
+  "X-Copilot-Session-Id" = "COPILOT_SESSION_ID",
+  "X-Copilot-Scopes" = "COPILOT_SCOPES"
+}
